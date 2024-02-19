@@ -41,21 +41,23 @@ def word2bpmf(phrase: str) -> list[str]:
         combo: list[list[str]] = [lookup[c] for c in phrase]
         return [f'{"-".join(t)}' for t in itertools.product(*combo)]
 
+    return []
+
 
 # extract Chinese phrases and replacements from yaml files
-baka_dict = collections.defaultdict(list)
-baka_dict_bpmf = {}
+baka_dict: dict[str, list[str]] = collections.defaultdict(list)
+baka_dict_bpmf: dict[str, str] = {}
 for f in p.glob('*.yml'):
     y = yaml.safe_load(f.open())
-    word = y['word']
-    bpmf = y['bopomofo']
+    word: str = y['word']
+    bpmf: str | None = y['bopomofo']
     baka_dict_bpmf[word] = bpmf.replace(' ', '-') if bpmf is not None else ''
     for e in y['examples']:
         for w in e['words']:
             baka_dict[word].append(w)
 
 # load fcitx5-mcbopomofo-git dictionary
-mcbopomofo_dict = collections.defaultdict(list)
+mcbopomofo_dict: dict[str, list[str]] = collections.defaultdict(list)
 with open(DICT) as f:
     for line in f:
         # skip comments
@@ -64,8 +66,7 @@ with open(DICT) as f:
 
         with contextlib.suppress(ValueError):
             bpmf, word, freq = line.split()
-
-        mcbopomofo_dict[word].append(bpmf)
+            mcbopomofo_dict[word].append(bpmf)
 
 # lookup the collected Chinese phrases from fcitx5-mcbopomofo-git dict
 for word, replacements in baka_dict.items():
@@ -80,9 +81,9 @@ for word, replacements in baka_dict.items():
 
         # attempt to compose possible bpmf for the phrase not in the dictionary
         # patch with suggested phrases
-        combos = word2bpmf(word)
+        combos: list[str] = word2bpmf(word)
 
-        # skip if we have seen this, this avoids unneccessary terms
+        # skip if we have seen this, this avoids unnecessary terms
         if bpmf not in combos:
             for combo in combos:
                 for replacement in replacements:

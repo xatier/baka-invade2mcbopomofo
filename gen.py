@@ -19,7 +19,7 @@ import yaml
 
 DICT = "/usr/share/fcitx5/data/mcbopomofo-data.txt"
 BPMF_FILE = '/usr/share/fcitx5/data/mcbopomofo-data-plain-bpmf.txt'
-p = pathlib.Path('database/dict/')
+p = pathlib.Path('database/vocabs/')
 
 
 # possible bpmf combinations for the given phrase
